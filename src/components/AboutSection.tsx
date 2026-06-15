@@ -2,42 +2,85 @@ import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import { Brain, Code, Zap, Sparkles, BookOpen } from "lucide-react";
 
+// const storyChapters = [
+//   {
+//     icon: Brain,
+//     title: "Chapter 2: The AI Awakening",
+//     narrative: "He discovered the power of artificial intelligence — machines that could think, learn, and create alongside him.",
+//     description: "Building intelligent systems that automate complex workflows, from chatbots to predictive models.",
+//     colorClass: "text-primary",
+//     borderColor: "border-primary/20",
+//     glowBg: "hsl(200, 100%, 55%)",
+//   },
+//   {
+//     icon: Code,
+//     title: "Chapter 3: The Code Forge",
+//     narrative: "Late nights turned into masterpieces — lines of code weaving together into beautiful digital tapestries.",
+//     description: "Crafting performant, beautiful web experiences with React, TypeScript, and cutting-edge frameworks.",
+//     colorClass: "text-secondary",
+//     borderColor: "border-secondary/20",
+//     glowBg: "hsl(270, 80%, 60%)",
+//   },
+//   {
+//     icon: Zap,
+//     title: "Chapter 4: The Speed Demon",
+//     narrative: "Speed became his obsession — every millisecond mattered, every interaction had to feel instant.",
+//     description: "Optimizing systems for blazing performance, seamless UX, and infinite scalability.",
+//     colorClass: "text-accent",
+//     borderColor: "border-accent/20",
+//     glowBg: "hsl(160, 80%, 45%)",
+//   },
+//   {
+//     icon: Sparkles,
+//     title: "Chapter 5: The Artist",
+//     narrative: "But code alone wasn't enough. He needed art, motion, and magic to truly captivate.",
+//     description: "Blending aesthetics with functionality — animations, micro-interactions, and immersive design.",
+//     colorClass: "text-primary",
+//     borderColor: "border-primary/20",
+//     glowBg: "hsl(200, 100%, 55%)",
+//   },
+// ];
+
 const storyChapters = [
   {
     icon: Brain,
-    title: "Chapter 2: The AI Awakening",
-    narrative: "He discovered the power of artificial intelligence — machines that could think, learn, and create alongside him.",
-    description: "Building intelligent systems that automate complex workflows, from chatbots to predictive models.",
+    title: "AI & Automation",
+    narrative: "Building intelligent systems that think, learn, and automate complex workflows with precision.",
+    description: "From chatbots to predictive models, harnessing AI to transform ideas into reality.",
     colorClass: "text-primary",
-    borderColor: "border-primary/20",
+    glowClass: "shadow-[0_0_30px_hsl(200,100%,55%,0.15)]",
     glowBg: "hsl(200, 100%, 55%)",
+    borderColor: "border-primary/20",
   },
   {
     icon: Code,
-    title: "Chapter 3: The Code Forge",
-    narrative: "Late nights turned into masterpieces — lines of code weaving together into beautiful digital tapestries.",
-    description: "Crafting performant, beautiful web experiences with React, TypeScript, and cutting-edge frameworks.",
+    title: "Web Development",
+    narrative: "Crafting performant, beautiful web experiences with modern frameworks and cutting-edge tech.",
+    description: "Building responsive, accessible web applications with React, TypeScript, and modern development practices.",
     colorClass: "text-secondary",
-    borderColor: "border-secondary/20",
+    glowClass: "shadow-[0_0_30px_hsl(270,80%,60%,0.15)]",
     glowBg: "hsl(270, 80%, 60%)",
+    borderColor: "border-secondary/20",
   },
   {
     icon: Zap,
-    title: "Chapter 4: The Speed Demon",
-    narrative: "Speed became his obsession — every millisecond mattered, every interaction had to feel instant.",
-    description: "Optimizing systems for blazing performance, seamless UX, and infinite scalability.",
+    title: "Performance",
+    narrative: "Optimizing systems for speed, scalability, and seamless user experiences across all devices.",
+    description: "Enhancing application performance and ensuring seamless experiences across all platforms.",
     colorClass: "text-accent",
-    borderColor: "border-accent/20",
+    glowClass: "shadow-[0_0_30px_hsl(160,80%,45%,0.15)]",
     glowBg: "hsl(160, 80%, 45%)",
+    borderColor: "border-accent/20",
   },
   {
     icon: Sparkles,
-    title: "Chapter 5: The Artist",
-    narrative: "But code alone wasn't enough. He needed art, motion, and magic to truly captivate.",
-    description: "Blending aesthetics with functionality — animations, micro-interactions, and immersive design.",
+    title: "Creative Design",
+    narrative: "Blending aesthetics with functionality to create immersive, memorable digital experiences.",
+    description: "Designing visually stunning interfaces that provide exceptional user experiences.",
     colorClass: "text-primary",
-    borderColor: "border-primary/20",
+    glowClass: "shadow-[0_0_30px_hsl(200,100%,55%,0.15)]",
     glowBg: "hsl(200, 100%, 55%)",
+    borderColor: "border-primary/20",
   },
 ];
 
@@ -74,7 +117,7 @@ const AboutSection = () => {
           </motion.div>
 
           <h2 className="text-4xl md:text-6xl font-heading font-bold mb-6">
-            <span className="text-gradient">His Journey Unfolds</span>
+            <span className="text-gradient">My Journey Unfolds</span>
           </h2>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto font-body italic">
             "Every great developer has a story. This is mine — told through the chapters that shaped who I am."

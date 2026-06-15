@@ -6,14 +6,14 @@ import IllustratedBoy from "./IllustratedBoy";
 const storyLines = [
   { text: "Once upon a time, in a world of code and pixels...", delay: 0.5 },
   { text: "there lived a developer who dreamed in algorithms.", delay: 2.5 },
-  { text: "He didn't just build websites — he crafted experiences.", delay: 5 },
+  { text: "He didn't just build automated systems — he crafted experiences.", delay: 5 },
 ];
 
 const roles = [
   "AI Automation Expert",
   "Creative Developer",
-  "Full-Stack Engineer",
-  "Digital Storyteller",
+  "Web Engineer",
+  
 ];
 
 const HeroSection = () => {
@@ -168,7 +168,7 @@ const HeroSection = () => {
                   transition={{ duration: 0.4, ease: [0.34, 1.56, 0.64, 1] }}
                 >
                   <p className="text-sm text-foreground font-body leading-snug">
-                    Hey! 👋 I'm a developer who turns 
+                    Hey! 👋 I'm a Hamza Akhtar, AI and web developer who turns 
                     <span className="text-primary"> wild ideas</span> into 
                     <span className="text-accent"> real products</span>.
                   </p>
@@ -195,7 +195,7 @@ const HeroSection = () => {
             >
               <BookOpen className="w-3.5 h-3.5 text-primary" />
               <span className="text-xs text-muted-foreground font-heading tracking-widest uppercase">
-                Chapter 1 — The Beginning
+                Introduction
               </span>
             </motion.div>
 
@@ -206,7 +206,7 @@ const HeroSection = () => {
               className="text-4xl md:text-6xl lg:text-7xl font-heading font-bold leading-tight mb-4"
             >
               <span className="text-foreground">Meet </span>
-              <span className="text-gradient">Your Name</span>
+              <span className="text-gradient">Hamza Akhtar</span>
             </motion.h1>
 
             {/* Typing role */}
@@ -227,8 +227,8 @@ const HeroSection = () => {
               transition={{ delay: 1.5, duration: 0.7 }}
               className="text-base text-muted-foreground max-w-xl mx-auto lg:mx-0 mb-8 font-body leading-relaxed"
             >
-              The boy sat at his desk, surrounded by glowing screens and infinite possibilities.
-              He wasn't just writing code — he was
+              The boy sitting at his desk, surrounded by glowing screens and infinite possibilities.
+              He ain't just writing code — he is
               <span className="text-primary"> automating the future</span> with AI,
               <span className="text-secondary"> crafting digital art</span>, and
               <span className="text-accent"> building the impossible</span>.

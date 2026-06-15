@@ -27,7 +27,7 @@ const Navbar = () => {
     >
       <div className="max-w-6xl mx-auto px-6 flex items-center justify-between">
         <a href="#" className="text-xl font-heading font-bold text-gradient">
-          YN.
+          Hamza Akhtar
         </a>
         <div className="flex items-center gap-8">
           {navLinks.map((link) => (

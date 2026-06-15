@@ -3,9 +3,9 @@ import { useRef } from "react";
 import { Mail, Github, Linkedin, ArrowUpRight } from "lucide-react";
 
 const links = [
-  { icon: Mail, label: "Email", href: "mailto:hello@example.com", color: "text-primary" },
-  { icon: Github, label: "GitHub", href: "https://github.com", color: "text-secondary" },
-  { icon: Linkedin, label: "LinkedIn", href: "https://linkedin.com", color: "text-accent" },
+  { icon: Mail, label: "Email", href: "mailto:hamzaqureshi0128@gmail.com", color: "text-primary" },
+  { icon: Github, label: "GitHub", href: "https://github.com/Hamza1106", color: "text-secondary" },
+  { icon: Linkedin, label: "LinkedIn", href: "https://linkedin.com/in/hamza-akhtar-8ab424415/", color: "text-accent" },
 ];
 
 const ContactSection = () => {
