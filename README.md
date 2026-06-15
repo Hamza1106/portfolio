@@ -1,3 +1,16 @@
-# Welcome to your Lovable project
+# Hamza Akhtar — AI Developer Portfolio
 
-TODO: Document your project here
+Personal portfolio website showcasing AI projects, freelancing work, and technical skills.
+Built with React + TypeScript.
+
+## Features
+- Projects showcase (AI Agents, Chatbots, Automation workflows)
+- Skills section
+- Contact form
+- Voice Agent integration (Vapi.ai)
+
+## Tech Stack
+- React + TypeScript
+- Vite
+
+
