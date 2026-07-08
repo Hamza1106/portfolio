@@ -1,6 +1,8 @@
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import { Brain, Code, Zap, Sparkles, BookOpen } from "lucide-react";
+import TechOrbs from "./TechOrbs";
+
 
 const storyChapters = [
   {
@@ -147,6 +149,9 @@ const AboutSection = () => {
           </div>
         </div>
 
+        {/* Tech orbs interlude */}
+        <TechOrbs />
+
         {/* Stats as story epilogue */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -157,23 +162,50 @@ const AboutSection = () => {
           <p className="text-center text-muted-foreground font-body italic mb-8">
             "And the numbers spoke for themselves..."
           </p>
-          <div className="grid grid-cols-3 gap-4 md:gap-6">
+          <div className="grid grid-cols-3 gap-4 md:gap-6" style={{ perspective: "1200px" }}>
             {[
               { number: "50+", label: "Projects Built" },
               { number: "3+", label: "Years of Story" },
               { number: "∞", label: "Curiosity" },
             ].map((stat) => (
-              <div
+              <motion.div
                 key={stat.label}
-                className="text-center glass rounded-2xl py-6 md:py-8 glow-border"
+                whileHover={{
+                  y: -14,
+                  rotateX: -12,
+                  rotateY: 8,
+                  scale: 1.05,
+                }}
+                transition={{ type: "spring", stiffness: 220, damping: 15 }}
+                className="relative text-center glass rounded-2xl py-6 md:py-8 glow-border cursor-pointer"
+                style={{
+                  transformStyle: "preserve-3d",
+                  boxShadow:
+                    "0 10px 30px -12px hsl(200 100% 55% / 0.25), 0 4px 12px -6px hsl(270 80% 60% / 0.2)",
+                }}
               >
-                <div className="text-2xl md:text-4xl font-heading font-bold text-gradient mb-2">
+                <div
+                  className="text-2xl md:text-4xl font-heading font-bold text-gradient mb-2"
+                  style={{ transform: "translateZ(30px)" }}
+                >
                   {stat.number}
                 </div>
-                <div className="text-xs md:text-sm text-muted-foreground font-body">
+                <div
+                  className="text-xs md:text-sm text-muted-foreground font-body"
+                  style={{ transform: "translateZ(20px)" }}
+                >
                   {stat.label}
                 </div>
-              </div>
+                {/* Floating glow */}
+                <div
+                  className="absolute inset-0 rounded-2xl opacity-0 hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+                  style={{
+                    background:
+                      "radial-gradient(circle at 50% 0%, hsl(200 100% 55% / 0.25), transparent 70%)",
+                    transform: "translateZ(-10px)",
+                  }}
+                />
+              </motion.div>
             ))}
           </div>
         </motion.div>
