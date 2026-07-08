@@ -1,6 +1,8 @@
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import { Brain, Code, Zap, Sparkles, BookOpen } from "lucide-react";
+import TechOrbs from "./TechOrbs";
+
 
 const storyChapters = [
   {
