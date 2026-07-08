@@ -47,39 +47,49 @@ const techs: Tech[] = [
 ];
 
 const Orb = ({ tech, index }: { tech: Tech; index: number }) => {
-  const [rot, setRot] = useState({ x: -15, y: index * 20 });
+  const [rot, setRot] = useState({ x: -10, y: index * 25 });
+  const velocity = useRef({ x: 0, y: 0 });
   const dragging = useRef(false);
-  const last = useRef({ x: 0, y: 0 });
-  const autoRef = useRef<number>(0);
-  const idle = useRef(true);
+  const last = useRef({ x: 0, y: 0, t: 0 });
+  const rafRef = useRef<number>(0);
 
+  // Inertia loop — only spins after a user flick, then decays to rest.
   useEffect(() => {
     const loop = () => {
-      if (idle.current) {
-        setRot((r) => ({ x: r.x, y: r.y + 0.4 }));
+      if (!dragging.current) {
+        const vx = velocity.current.x;
+        const vy = velocity.current.y;
+        if (Math.abs(vx) > 0.01 || Math.abs(vy) > 0.01) {
+          setRot((r) => ({ x: r.x + vy, y: r.y + vx }));
+          velocity.current.x *= 0.94;
+          velocity.current.y *= 0.94;
+        }
       }
-      autoRef.current = requestAnimationFrame(loop);
+      rafRef.current = requestAnimationFrame(loop);
     };
-    autoRef.current = requestAnimationFrame(loop);
-    return () => cancelAnimationFrame(autoRef.current);
+    rafRef.current = requestAnimationFrame(loop);
+    return () => cancelAnimationFrame(rafRef.current);
   }, []);
 
   const onDown = (e: React.PointerEvent) => {
     dragging.current = true;
-    idle.current = false;
-    last.current = { x: e.clientX, y: e.clientY };
+    velocity.current = { x: 0, y: 0 };
+    last.current = { x: e.clientX, y: e.clientY, t: performance.now() };
     (e.target as Element).setPointerCapture(e.pointerId);
   };
   const onMove = (e: React.PointerEvent) => {
     if (!dragging.current) return;
+    const now = performance.now();
     const dx = e.clientX - last.current.x;
     const dy = e.clientY - last.current.y;
-    last.current = { x: e.clientX, y: e.clientY };
+    const dt = Math.max(1, now - last.current.t);
+    last.current = { x: e.clientX, y: e.clientY, t: now };
     setRot((r) => ({ x: r.x - dy * 0.6, y: r.y + dx * 0.6 }));
+    // instantaneous velocity in deg/frame (~16ms)
+    velocity.current = { x: (dx / dt) * 10, y: (-dy / dt) * 10 };
   };
   const onUp = () => {
     dragging.current = false;
-    setTimeout(() => (idle.current = true), 1200);
   };
 
   return (
@@ -88,14 +98,18 @@ const Orb = ({ tech, index }: { tech: Tech; index: number }) => {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.5, delay: index * 0.08 }}
+      whileHover={{ y: -6 }}
       className="flex flex-col items-center gap-3 select-none"
       style={{ perspective: "600px" }}
     >
-      <div
+      <motion.div
         onPointerDown={onDown}
         onPointerMove={onMove}
         onPointerUp={onUp}
         onPointerCancel={onUp}
+        whileTap={{ scale: 0.94 }}
+        whileHover={{ scale: 1.06 }}
+        transition={{ type: "spring", stiffness: 300, damping: 15 }}
         className="relative cursor-grab active:cursor-grabbing touch-none"
         style={{
           width: 88,
@@ -103,51 +117,73 @@ const Orb = ({ tech, index }: { tech: Tech; index: number }) => {
           transformStyle: "preserve-3d",
         }}
       >
-        {/* Sphere shell (fixed shading) */}
-        <div
-          className="absolute inset-0 rounded-full"
-          style={{
-            background: `radial-gradient(circle at 30% 25%, hsl(0 0% 100% / 0.5), ${tech.color} 40%, ${tech.color} 60%, hsl(0 0% 0% / 0.6) 100%)`,
-            boxShadow: `0 15px 40px -10px ${tech.color}80, inset -8px -12px 20px hsl(0 0% 0% / 0.4), inset 6px 8px 14px hsl(0 0% 100% / 0.25)`,
-          }}
-        />
-        {/* Rotating logo layer */}
+        {/* Rotating sphere — shading and logo rotate together so the logo looks painted on */}
         <div
           className="absolute inset-0"
           style={{
             transformStyle: "preserve-3d",
             transform: `rotateX(${rot.x}deg) rotateY(${rot.y}deg)`,
-            transition: dragging.current ? "none" : "transform 0.08s linear",
           }}
         >
-          {/* Front face */}
+          {/* Front hemisphere with logo baked into the surface */}
           <div
-            className="absolute inset-0 flex items-center justify-center"
-            style={{ transform: "translateZ(44px)", backfaceVisibility: "hidden" }}
+            className="absolute inset-0 rounded-full flex items-center justify-center overflow-hidden"
+            style={{
+              transform: "translateZ(0.1px)",
+              backfaceVisibility: "hidden",
+              background: `radial-gradient(circle at 32% 28%, hsl(0 0% 100% / 0.35), ${tech.color} 45%, ${tech.color} 62%, hsl(0 0% 0% / 0.55) 100%)`,
+            }}
           >
-            <svg viewBox="0 0 24 24" width="42" height="42" fill="#fff" style={{ filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.5))" }}>
+            <svg
+              viewBox="0 0 24 24"
+              width="46"
+              height="46"
+              fill={tech.color}
+              style={{
+                // Darken the logo relative to sphere color so it reads as printed pigment, not a sticker on top
+                filter: "brightness(0.55) contrast(1.1)",
+                mixBlendMode: "multiply",
+                opacity: 0.95,
+              }}
+            >
               <path d={tech.path} />
             </svg>
           </div>
-          {/* Back face (mirrored) */}
+          {/* Back hemisphere — same paint, mirrored */}
           <div
-            className="absolute inset-0 flex items-center justify-center"
-            style={{ transform: "rotateY(180deg) translateZ(44px)", backfaceVisibility: "hidden" }}
+            className="absolute inset-0 rounded-full flex items-center justify-center overflow-hidden"
+            style={{
+              transform: "rotateY(180deg) translateZ(0.1px)",
+              backfaceVisibility: "hidden",
+              background: `radial-gradient(circle at 32% 28%, hsl(0 0% 100% / 0.35), ${tech.color} 45%, ${tech.color} 62%, hsl(0 0% 0% / 0.55) 100%)`,
+            }}
           >
-            <svg viewBox="0 0 24 24" width="42" height="42" fill="#fff" style={{ opacity: 0.9 }}>
+            <svg
+              viewBox="0 0 24 24"
+              width="46"
+              height="46"
+              fill={tech.color}
+              style={{
+                filter: "brightness(0.55) contrast(1.1)",
+                mixBlendMode: "multiply",
+                opacity: 0.95,
+              }}
+            >
               <path d={tech.path} />
             </svg>
           </div>
         </div>
-        {/* Highlight overlay (on top of everything, static) */}
+
+        {/* Static lighting — glossy highlight + drop shadow stay put so the ball feels lit in place */}
         <div
           className="absolute inset-0 rounded-full pointer-events-none"
           style={{
             background:
-              "radial-gradient(ellipse at 30% 22%, hsl(0 0% 100% / 0.45) 0%, transparent 35%)",
+              "radial-gradient(ellipse at 30% 22%, hsl(0 0% 100% / 0.5) 0%, transparent 38%)",
+            boxShadow: `0 15px 40px -10px ${tech.color}80, inset -8px -12px 22px hsl(0 0% 0% / 0.35), inset 6px 8px 14px hsl(0 0% 100% / 0.15)`,
           }}
         />
-      </div>
+      </motion.div>
       <span className="text-xs font-heading text-muted-foreground tracking-wide">
         {tech.name}
       </span>
