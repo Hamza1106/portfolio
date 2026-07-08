@@ -211,7 +211,7 @@ const TechOrbs = () => {
             <span className="text-gradient">Arsenal of Languages</span>
           </h3>
           <p className="text-xs text-muted-foreground mt-2 font-body">
-            Drag any orb to spin it
+            Grab and flick an orb to spin it — it rests until you touch it
           </p>
         </motion.div>
         <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-7 gap-6 md:gap-4 justify-items-center">
