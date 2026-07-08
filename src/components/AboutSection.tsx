@@ -149,6 +149,9 @@ const AboutSection = () => {
           </div>
         </div>
 
+        {/* Tech orbs interlude */}
+        <TechOrbs />
+
         {/* Stats as story epilogue */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
