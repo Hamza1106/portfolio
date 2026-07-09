@@ -162,6 +162,9 @@ const Orb = ({ tech, index }: { tech: Tech; index: number }) => {
                 style={{
                   mixBlendMode: "overlay",
                   opacity: 0.8,
+                  top: "50%",
+                  left: "50%",
+                  transform: "translate(-50%, -50%)",
                 }}
               >
                 <path d={tech.path} />
@@ -176,7 +179,9 @@ const Orb = ({ tech, index }: { tech: Tech; index: number }) => {
                 style={{
                   mixBlendMode: "multiply",
                   opacity: 0.28,
-                  transform: "translate(1px, 1px)",
+                  top: "50%",
+                  left: "50%",
+                  transform: "translate(calc(-50% + 1px), calc(-50% + 1px))",
                   filter: "blur(0.5px)",
                 }}
               >
