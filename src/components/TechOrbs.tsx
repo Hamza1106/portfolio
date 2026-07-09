@@ -56,7 +56,7 @@ const darkenColor = (hex: string, amount = 0.35) => {
 };
 
 const Orb = ({ tech, index }: { tech: Tech; index: number }) => {
-  const [rot, setRot] = useState({ x: -10, y: index * 25 });
+  const [rot, setRot] = useState({ x: -8, y: 0 });
   const velocity = useRef({ x: 0, y: 0 });
   const dragging = useRef(false);
   const last = useRef({ x: 0, y: 0, t: 0 });
