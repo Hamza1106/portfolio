@@ -158,10 +158,26 @@ const Orb = ({ tech, index }: { tech: Tech; index: number }) => {
                 width="44"
                 height="44"
                 fill="white"
+                className="absolute"
                 style={{
                   mixBlendMode: "overlay",
-                  opacity: 0.85,
-                  filter: "drop-shadow(0 1px 1px rgb(0 0 0 / 0.25))",
+                  opacity: 0.8,
+                }}
+              >
+                <path d={tech.path} />
+              </svg>
+              {/* Subtle inset shadow of the logo to make it look pressed into the surface */}
+              <svg
+                viewBox="0 0 24 24"
+                width="44"
+                height="44"
+                fill="black"
+                className="absolute"
+                style={{
+                  mixBlendMode: "multiply",
+                  opacity: 0.28,
+                  transform: "translate(1px, 1px)",
+                  filter: "blur(0.5px)",
                 }}
               >
                 <path d={tech.path} />
