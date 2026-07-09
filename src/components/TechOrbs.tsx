@@ -159,8 +159,9 @@ const Orb = ({ tech, index }: { tech: Tech; index: number }) => {
                 height="44"
                 fill="white"
                 style={{
-                  filter: "drop-shadow(0 1px 2px rgb(0 0 0 / 0.35))",
-                  opacity: 0.92,
+                  mixBlendMode: "overlay",
+                  opacity: 0.85,
+                  filter: "drop-shadow(0 1px 1px rgb(0 0 0 / 0.25))",
                 }}
               >
                 <path d={tech.path} />
