@@ -113,7 +113,7 @@ const Orb = ({ tech, index }: { tech: Tech; index: number }) => {
     >
       {/* Floating wrapper — the whole orb bobs gently up/down */}
       <motion.div
-        animate={{ y: [0, -8, 0] }}
+        animate={{ y: [0, -4, 0] }}
         transition={{
           duration: 3.2 + index * 0.3,
           repeat: Infinity,
