@@ -143,10 +143,10 @@ const Orb = ({ tech, index }: { tech: Tech; index: number }) => {
             }}
           />
 
-          {/* Rotating logo skin — logos wrapped around the sphere at multiple longitudes.
-              Each copy is a plane pushed OUT to the sphere surface so it looks painted on. */}
+          {/* Rotating logo skin — clipped to the sphere circle so nothing spills over.
+              Each copy sits ON the surface with backfaceVisibility hidden. */}
           <div
-            className="absolute inset-0"
+            className="absolute inset-0 rounded-full overflow-hidden"
             style={{
               transformStyle: "preserve-3d",
               transform: `rotateX(${rot.x}deg) rotateY(${rot.y}deg)`,
@@ -158,17 +158,18 @@ const Orb = ({ tech, index }: { tech: Tech; index: number }) => {
                 className="absolute inset-0 flex items-center justify-center"
                 style={{
                   transformStyle: "preserve-3d",
-                  transform: `rotateY(${lon}deg) translateZ(${radius - 1}px)`,
+                  transform: `rotateY(${lon}deg) translateZ(${radius - 2}px)`,
                   backfaceVisibility: "hidden",
-                }}
+                  WebkitBackfaceVisibility: "hidden",
+                } as React.CSSProperties}
               >
                 <svg
                   viewBox="0 0 24 24"
-                  width={SIZE * 0.5}
-                  height={SIZE * 0.5}
+                  width={SIZE * 0.52}
+                  height={SIZE * 0.52}
                   fill="#ffffff"
                   style={{
-                    filter: `drop-shadow(0 1px 0 rgba(0,0,0,0.35)) drop-shadow(0 0 2px rgba(0,0,0,0.25))`,
+                    filter: `drop-shadow(0 1px 0 rgba(0,0,0,0.4)) drop-shadow(0 0 2px rgba(0,0,0,0.3))`,
                     opacity: 0.95,
                   }}
                 >
