@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from "react";
 type Tech = {
   name: string;
   color: string;
-  // simple-icons path (24x24 viewBox)
   path: string;
 };
 
@@ -46,32 +45,30 @@ const techs: Tech[] = [
   },
 ];
 
-// Convert hex to a darker version for the back face
-const darkenColor = (hex: string, amount = 0.35) => {
-  const num = parseInt(hex.replace("#", ""), 16);
-  const r = Math.max(0, (num >> 16) * (1 - amount)) | 0;
-  const g = Math.max(0, ((num >> 8) & 0x00ff) * (1 - amount)) | 0;
-  const b = Math.max(0, (num & 0x00ff) * (1 - amount)) | 0;
-  return `rgb(${r}, ${g}, ${b})`;
-};
+const SIZE = 96;
+
+// Build a spherical projection of the logo:
+// We stamp the same logo at multiple longitudes around the sphere.
+// Each copy is rendered as a plane tangent to the sphere at that longitude,
+// so as the ball rotates the logo always appears wrapped ON the surface.
+const LOGO_COPIES = [0, 90, 180, 270]; // 4 copies around equator
 
 const Orb = ({ tech, index }: { tech: Tech; index: number }) => {
-  const [rot, setRot] = useState({ x: -8, y: 0 });
+  const [rot, setRot] = useState({ x: -10, y: 0 });
   const velocity = useRef({ x: 0, y: 0 });
   const dragging = useRef(false);
   const last = useRef({ x: 0, y: 0, t: 0 });
   const rafRef = useRef<number>(0);
 
-  // Inertia loop — only spins after a user flick, then decays to rest.
   useEffect(() => {
     const loop = () => {
       if (!dragging.current) {
         const vx = velocity.current.x;
         const vy = velocity.current.y;
-        if (Math.abs(vx) > 0.01 || Math.abs(vy) > 0.01) {
+        if (Math.abs(vx) > 0.02 || Math.abs(vy) > 0.02) {
           setRot((r) => ({ x: r.x + vy, y: r.y + vx }));
-          velocity.current.x *= 0.94;
-          velocity.current.y *= 0.94;
+          velocity.current.x *= 0.95;
+          velocity.current.y *= 0.95;
         }
       }
       rafRef.current = requestAnimationFrame(loop);
@@ -100,7 +97,7 @@ const Orb = ({ tech, index }: { tech: Tech; index: number }) => {
     dragging.current = false;
   };
 
-  const backColor = darkenColor(tech.color, 0.45);
+  const radius = SIZE / 2;
 
   return (
     <motion.div
@@ -109,16 +106,15 @@ const Orb = ({ tech, index }: { tech: Tech; index: number }) => {
       viewport={{ once: true }}
       transition={{ duration: 0.5, delay: index * 0.08 }}
       className="flex flex-col items-center gap-3 select-none"
-      style={{ perspective: "600px" }}
+      style={{ perspective: "800px" }}
     >
-      {/* Floating wrapper — the whole orb bobs gently up/down */}
       <motion.div
-        animate={{ y: [0, -4, 0] }}
+        animate={{ y: [0, -5, 0] }}
         transition={{
-          duration: 3.2 + index * 0.3,
+          duration: 3.4 + index * 0.25,
           repeat: Infinity,
           ease: "easeInOut",
-          delay: index * 0.18,
+          delay: index * 0.2,
         }}
       >
         <motion.div
@@ -126,17 +122,27 @@ const Orb = ({ tech, index }: { tech: Tech; index: number }) => {
           onPointerMove={onMove}
           onPointerUp={onUp}
           onPointerCancel={onUp}
-          whileTap={{ scale: 0.94 }}
           whileHover={{ scale: 1.06 }}
-          transition={{ type: "spring", stiffness: 300, damping: 15 }}
+          whileTap={{ scale: 0.95 }}
+          transition={{ type: "spring", stiffness: 300, damping: 18 }}
           className="relative cursor-grab active:cursor-grabbing touch-none"
           style={{
-            width: 88,
-            height: 88,
+            width: SIZE,
+            height: SIZE,
             transformStyle: "preserve-3d",
           }}
         >
-          {/* Rotating sphere */}
+          {/* Base sphere (solid tinted ball). Does NOT rotate — this is the mass of the ball. */}
+          <div
+            className="absolute inset-0 rounded-full"
+            style={{
+              background: `radial-gradient(circle at 32% 28%, hsl(0 0% 100% / 0.55) 0%, ${tech.color} 45%, ${tech.color} 60%, rgba(0,0,0,0.55) 100%)`,
+              boxShadow: `0 20px 40px -14px ${tech.color}90, inset -10px -14px 24px rgba(0,0,0,0.4), inset 8px 10px 18px rgba(255,255,255,0.18)`,
+            }}
+          />
+
+          {/* Rotating logo skin — logos wrapped around the sphere at multiple longitudes.
+              Each copy is a plane pushed OUT to the sphere surface so it looks painted on. */}
           <div
             className="absolute inset-0"
             style={{
@@ -144,80 +150,46 @@ const Orb = ({ tech, index }: { tech: Tech; index: number }) => {
               transform: `rotateX(${rot.x}deg) rotateY(${rot.y}deg)`,
             }}
           >
-            {/* Front face: logo baked into the ball surface */}
-            <div
-              className="absolute inset-0 rounded-full flex items-center justify-center overflow-hidden"
-              style={{
-                transform: "translateZ(1px)",
-                backfaceVisibility: "hidden",
-                background: `radial-gradient(circle at 35% 30%, hsl(0 0% 100% / 0.45), ${tech.color} 40%, ${tech.color} 60%, ${darkenColor(tech.color, 0.25)} 100%)`,
-              }}
-            >
-              <svg
-                viewBox="0 0 24 24"
-                width="44"
-                height="44"
-                fill="white"
-                className="absolute"
+            {LOGO_COPIES.map((lon) => (
+              <div
+                key={lon}
+                className="absolute inset-0 flex items-center justify-center"
                 style={{
-                  mixBlendMode: "overlay",
-                  opacity: 0.8,
-                  top: "50%",
-                  left: "50%",
-                  transform: "translate(-50%, -50%)",
+                  transformStyle: "preserve-3d",
+                  transform: `rotateY(${lon}deg) translateZ(${radius - 1}px)`,
+                  backfaceVisibility: "hidden",
                 }}
               >
-                <path d={tech.path} />
-              </svg>
-              {/* Subtle inset shadow of the logo to make it look pressed into the surface */}
-              <svg
-                viewBox="0 0 24 24"
-                width="44"
-                height="44"
-                fill="black"
-                className="absolute"
-                style={{
-                  mixBlendMode: "multiply",
-                  opacity: 0.28,
-                  top: "50%",
-                  left: "50%",
-                  transform: "translate(calc(-50% + 1px), calc(-50% + 1px))",
-                  filter: "blur(0.5px)",
-                }}
-              >
-                <path d={tech.path} />
-              </svg>
-            </div>
-
-            {/* Back face: same ball, darker, no logo so rotation is obvious */}
-            <div
-              className="absolute inset-0 rounded-full"
-              style={{
-                transform: "rotateY(180deg) translateZ(1px)",
-                backfaceVisibility: "hidden",
-                background: `radial-gradient(circle at 35% 30%, hsl(0 0% 100% / 0.15), ${backColor} 45%, ${backColor} 65%, hsl(0 0% 0% / 0.55) 100%)`,
-              }}
-            />
-
-            {/* Dark equator band that rotates with the sphere to emphasize 3D roll */}
-            <div
-              className="absolute inset-0 rounded-full"
-              style={{
-                transform: "rotateX(90deg) translateZ(0px)",
-                background:
-                  "linear-gradient(90deg, transparent 0%, hsl(0 0% 0% / 0.25) 20%, hsl(0 0% 0% / 0.25) 80%, transparent 100%)",
-                opacity: 0.35,
-              }}
-            />
+                <svg
+                  viewBox="0 0 24 24"
+                  width={SIZE * 0.5}
+                  height={SIZE * 0.5}
+                  fill="#ffffff"
+                  style={{
+                    filter: `drop-shadow(0 1px 0 rgba(0,0,0,0.35)) drop-shadow(0 0 2px rgba(0,0,0,0.25))`,
+                    opacity: 0.95,
+                  }}
+                >
+                  <path d={tech.path} />
+                </svg>
+              </div>
+            ))}
           </div>
 
-          {/* Static lighting overlay — glossy highlight + shadow stays put so the ball feels lit in space */}
+          {/* Static glossy highlight — sits above everything so lighting stays fixed in space */}
           <div
             className="absolute inset-0 rounded-full pointer-events-none"
             style={{
               background:
-                "radial-gradient(ellipse at 30% 22%, hsl(0 0% 100% / 0.55) 0%, transparent 35%)",
-              boxShadow: `0 15px 40px -10px ${tech.color}80, inset -8px -12px 22px hsl(0 0% 0% / 0.35), inset 6px 8px 14px hsl(0 0% 100% / 0.15)`,
+                "radial-gradient(ellipse 55% 40% at 32% 22%, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.15) 30%, transparent 55%)",
+            }}
+          />
+          {/* Rim shadow */}
+          <div
+            className="absolute inset-0 rounded-full pointer-events-none"
+            style={{
+              boxShadow:
+                "inset -6px -8px 20px rgba(0,0,0,0.35), inset 4px 6px 12px rgba(255,255,255,0.08)",
             }}
           />
         </motion.div>

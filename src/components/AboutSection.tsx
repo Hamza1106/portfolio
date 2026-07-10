@@ -45,7 +45,7 @@ const storyChapters = [
 
 const AboutSection = () => {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-80px" });
+  const isInView = useInView(ref, { once: false, amount: 0.15, margin: "-80px" });
 
   return (
     <section id="about" className="relative py-32 px-6" ref={ref}>
@@ -113,8 +113,8 @@ const AboutSection = () => {
                     animate={isInView ? { scale: 1 } : {}}
                     transition={{ duration: 0.4, delay: 0.6 + i * 0.2 }}
                   >
-                    <div className={`w-12 h-12 rounded-full glass flex items-center justify-center ${chapter.borderColor} border`}>
-                      <chapter.icon className={`w-5 h-5 ${chapter.colorClass}`} />
+                    <div className={`w-16 h-16 md:w-20 md:h-20 rounded-full glass flex items-center justify-center ${chapter.borderColor} border-2`}>
+                      <chapter.icon className={`w-8 h-8 md:w-10 md:h-10 ${chapter.colorClass}`} />
                     </div>
                     {/* Dot glow */}
                     <div
