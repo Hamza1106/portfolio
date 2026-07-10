@@ -45,7 +45,7 @@ const storyChapters = [
 
 const AboutSection = () => {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-80px" });
+  const isInView = useInView(ref, { once: false, amount: 0.15, margin: "-80px" });
 
   return (
     <section id="about" className="relative py-32 px-6" ref={ref}>
