@@ -51,7 +51,9 @@ const SIZE = 96;
 // We stamp the same logo at multiple longitudes around the sphere.
 // Each copy is rendered as a plane tangent to the sphere at that longitude,
 // so as the ball rotates the logo always appears wrapped ON the surface.
-const LOGO_COPIES = [0, 90, 180, 270]; // 4 copies around equator
+// Two copies: front (0°) and back (180°). backfaceVisibility hides the one facing away,
+// so only one is ever visible and there are no edge-on strips.
+const LOGO_COPIES = [0, 180];
 
 const Orb = ({ tech, index }: { tech: Tech; index: number }) => {
   const [rot, setRot] = useState({ x: -10, y: 0 });
