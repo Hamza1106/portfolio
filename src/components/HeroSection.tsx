@@ -206,7 +206,7 @@ const HeroSection = () => {
               className="text-4xl md:text-6xl lg:text-7xl font-heading font-bold leading-tight mb-4"
             >
               <span className="text-foreground">Meet </span>
-              <span className="text-gradient">Your Name</span>
+              <span className="text-gradient">Hamza Akhtar</span>
             </motion.h1>
 
             {/* Typing role */}

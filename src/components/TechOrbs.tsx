@@ -51,7 +51,9 @@ const SIZE = 96;
 // We stamp the same logo at multiple longitudes around the sphere.
 // Each copy is rendered as a plane tangent to the sphere at that longitude,
 // so as the ball rotates the logo always appears wrapped ON the surface.
-const LOGO_COPIES = [0, 90, 180, 270]; // 4 copies around equator
+// Two copies: front (0°) and back (180°). backfaceVisibility hides the one facing away,
+// so only one is ever visible and there are no edge-on strips.
+const LOGO_COPIES = [0, 180];
 
 const Orb = ({ tech, index }: { tech: Tech; index: number }) => {
   const [rot, setRot] = useState({ x: -10, y: 0 });
@@ -141,10 +143,10 @@ const Orb = ({ tech, index }: { tech: Tech; index: number }) => {
             }}
           />
 
-          {/* Rotating logo skin — logos wrapped around the sphere at multiple longitudes.
-              Each copy is a plane pushed OUT to the sphere surface so it looks painted on. */}
+          {/* Rotating logo skin — clipped to the sphere circle so nothing spills over.
+              Each copy sits ON the surface with backfaceVisibility hidden. */}
           <div
-            className="absolute inset-0"
+            className="absolute inset-0 rounded-full overflow-hidden"
             style={{
               transformStyle: "preserve-3d",
               transform: `rotateX(${rot.x}deg) rotateY(${rot.y}deg)`,
@@ -156,17 +158,18 @@ const Orb = ({ tech, index }: { tech: Tech; index: number }) => {
                 className="absolute inset-0 flex items-center justify-center"
                 style={{
                   transformStyle: "preserve-3d",
-                  transform: `rotateY(${lon}deg) translateZ(${radius - 1}px)`,
+                  transform: `rotateY(${lon}deg) translateZ(${radius - 2}px)`,
                   backfaceVisibility: "hidden",
-                }}
+                  WebkitBackfaceVisibility: "hidden",
+                } as React.CSSProperties}
               >
                 <svg
                   viewBox="0 0 24 24"
-                  width={SIZE * 0.5}
-                  height={SIZE * 0.5}
+                  width={SIZE * 0.52}
+                  height={SIZE * 0.52}
                   fill="#ffffff"
                   style={{
-                    filter: `drop-shadow(0 1px 0 rgba(0,0,0,0.35)) drop-shadow(0 0 2px rgba(0,0,0,0.25))`,
+                    filter: `drop-shadow(0 1px 0 rgba(0,0,0,0.4)) drop-shadow(0 0 2px rgba(0,0,0,0.3))`,
                     opacity: 0.95,
                   }}
                 >

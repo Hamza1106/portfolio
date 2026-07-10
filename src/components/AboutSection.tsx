@@ -106,19 +106,16 @@ const AboutSection = () => {
                     isLeft ? "md:flex-row" : "md:flex-row-reverse"
                   }`}
                 >
-                  {/* Timeline dot */}
+                  {/* Timeline dot (small marker on the line) */}
                   <motion.div
-                    className="absolute left-6 md:left-1/2 -translate-x-1/2 z-10"
+                    className="absolute left-6 md:left-1/2 -translate-x-1/2 top-6 z-10"
                     initial={{ scale: 0 }}
                     animate={isInView ? { scale: 1 } : {}}
                     transition={{ duration: 0.4, delay: 0.6 + i * 0.2 }}
                   >
-                    <div className={`w-16 h-16 md:w-20 md:h-20 rounded-full glass flex items-center justify-center ${chapter.borderColor} border-2`}>
-                      <chapter.icon className={`w-8 h-8 md:w-10 md:h-10 ${chapter.colorClass}`} />
-                    </div>
-                    {/* Dot glow */}
+                    <div className={`w-4 h-4 rounded-full glass ${chapter.borderColor} border-2`} />
                     <div
-                      className="absolute inset-0 rounded-full blur-lg opacity-30"
+                      className="absolute inset-0 rounded-full blur-md opacity-50"
                       style={{ background: chapter.glowBg }}
                     />
                   </motion.div>
@@ -129,7 +126,20 @@ const AboutSection = () => {
                       className={`glass rounded-2xl p-6 md:p-8 glow-border group hover:scale-[1.02] transition-transform duration-300`}
                       whileHover={{ y: -4 }}
                     >
-                      <h3 className={`text-lg font-heading font-semibold ${chapter.colorClass} mb-3`}>
+                      {/* Centered chapter icon */}
+                      <div className="flex justify-center mb-5">
+                        <div className="relative">
+                          <div className={`w-20 h-20 md:w-24 md:h-24 rounded-full glass flex items-center justify-center ${chapter.borderColor} border-2`}>
+                            <chapter.icon className={`w-10 h-10 md:w-12 md:h-12 ${chapter.colorClass}`} />
+                          </div>
+                          <div
+                            className="absolute inset-0 rounded-full blur-xl opacity-40 -z-10"
+                            style={{ background: chapter.glowBg }}
+                          />
+                        </div>
+                      </div>
+
+                      <h3 className={`text-lg font-heading font-semibold ${chapter.colorClass} mb-3 text-center`}>
                         {chapter.title}
                       </h3>
                       <p className="text-foreground/80 font-body italic mb-4 text-sm leading-relaxed">
