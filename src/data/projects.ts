@@ -2,93 +2,121 @@ export interface Project {
   id: number;
   title: string;
   description: string;
+  summary: string;
+  category: string;
   videoUrl: string;
   githubUrl: string;
+  liveUrl: string;
   tags: string[];
+  features: string[];
+  status: "Live" | "In Progress" | "Beta" | "Archived";
+  timeline: string;
   color: "primary" | "secondary" | "accent";
+  accent: string; // hsl
 }
 
 const projects: Project[] = [
   {
     id: 1,
     title: "AI Content Generator",
-    description: "An intelligent content generation platform powered by GPT-4 with custom fine-tuning for brand voice consistency.",
+    summary: "GPT-4 powered content platform with brand voice fine-tuning.",
+    description:
+      "An intelligent content generation platform powered by GPT-4 with custom fine-tuning for brand voice consistency across marketing, docs and social channels.",
+    category: "Generative AI",
     videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
     githubUrl: "https://github.com",
-    tags: ["AI", "React", "Python"],
+    liveUrl: "https://example.com",
+    tags: ["AI", "React", "Python", "OpenAI"],
+    features: ["Custom brand voice", "Multi-language", "One-click export", "Team workspaces"],
+    status: "Live",
+    timeline: "2024 · 4 months",
     color: "primary",
+    accent: "200 100% 55%",
   },
   {
     id: 2,
     title: "Neural Network Visualizer",
-    description: "Interactive 3D visualization tool for understanding neural network architectures and training processes in real-time.",
+    summary: "Interactive 3D neural network explorer in real-time.",
+    description:
+      "Interactive 3D visualization tool for understanding neural network architectures and training processes with live layer inspection.",
+    category: "Data Viz",
     videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
     githubUrl: "https://github.com",
+    liveUrl: "https://example.com",
     tags: ["Three.js", "TensorFlow", "WebGL"],
+    features: ["Live training view", "Layer inspection", "Export models", "GPU accelerated"],
+    status: "Live",
+    timeline: "2023 · 6 months",
     color: "secondary",
+    accent: "270 80% 60%",
   },
   {
     id: 3,
     title: "Smart Automation Suite",
-    description: "End-to-end business process automation platform with AI-driven decision making and workflow optimization.",
+    summary: "End-to-end AI-driven business workflow automation.",
+    description:
+      "End-to-end business process automation platform with AI-driven decision making, integrations and workflow optimization.",
+    category: "Automation",
     videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
     githubUrl: "https://github.com",
+    liveUrl: "https://example.com",
     tags: ["Node.js", "AI", "Automation"],
+    features: ["Visual builder", "200+ integrations", "AI decisions", "Audit logs"],
+    status: "Beta",
+    timeline: "2024 · Ongoing",
     color: "accent",
+    accent: "160 80% 45%",
   },
   {
     id: 4,
     title: "Real-time Data Pipeline",
-    description: "High-throughput data streaming pipeline with real-time analytics dashboard and anomaly detection.",
+    summary: "High-throughput streaming with anomaly detection.",
+    description:
+      "High-throughput data streaming pipeline with real-time analytics dashboard and ML-powered anomaly detection.",
+    category: "Data Engineering",
     videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
     githubUrl: "https://github.com",
+    liveUrl: "https://example.com",
     tags: ["Kafka", "React", "D3.js"],
+    features: ["Sub-second latency", "Anomaly alerts", "Custom dashboards", "Horizontal scale"],
+    status: "Live",
+    timeline: "2023 · 5 months",
     color: "primary",
+    accent: "200 100% 55%",
   },
   {
     id: 5,
     title: "Voice-Controlled Dashboard",
-    description: "AI-powered dashboard with natural language voice commands for hands-free data exploration and reporting.",
+    summary: "Hands-free analytics via natural language voice.",
+    description:
+      "AI-powered dashboard with natural language voice commands for hands-free data exploration and reporting.",
+    category: "Voice AI",
     videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
     githubUrl: "https://github.com",
+    liveUrl: "https://example.com",
     tags: ["Speech AI", "React", "WebRTC"],
+    features: ["Natural language", "Real-time transcription", "Voice commands", "Multi-user"],
+    status: "In Progress",
+    timeline: "2025 · Ongoing",
     color: "secondary",
+    accent: "270 80% 60%",
   },
   {
     id: 6,
     title: "Predictive Analytics Engine",
-    description: "Machine learning platform for time-series forecasting with automated model selection and hyperparameter tuning.",
+    summary: "AutoML forecasting with hyperparameter tuning.",
+    description:
+      "Machine learning platform for time-series forecasting with automated model selection and hyperparameter tuning.",
+    category: "Machine Learning",
     videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
     githubUrl: "https://github.com",
+    liveUrl: "https://example.com",
     tags: ["ML", "Python", "FastAPI"],
+    features: ["AutoML", "Time-series", "Explainability", "REST API"],
+    status: "Live",
+    timeline: "2024 · 3 months",
     color: "accent",
-  },
-  {
-    id: 7,
-    title: "Collaborative Code Editor",
-    description: "Real-time multiplayer code editor with AI code completion, syntax highlighting, and integrated terminal.",
-    videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
-    githubUrl: "https://github.com",
-    tags: ["WebSocket", "Monaco", "AI"],
-    color: "primary",
-  },
-  {
-    id: 8,
-    title: "AR Shopping Experience",
-    description: "Augmented reality e-commerce platform allowing customers to visualize products in their space before purchasing.",
-    videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
-    githubUrl: "https://github.com",
-    tags: ["AR.js", "React", "Three.js"],
-    color: "secondary",
-  },
-  {
-    id: 9,
-    title: "Autonomous Bot Framework",
-    description: "Framework for building intelligent autonomous agents that can navigate, learn, and perform complex tasks.",
-    videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
-    githubUrl: "https://github.com",
-    tags: ["AI", "Robotics", "Python"],
-    color: "accent",
+    accent: "160 80% 45%",
   },
 ];
 
