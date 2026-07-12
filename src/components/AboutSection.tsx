@@ -1,5 +1,5 @@
-import { motion, useInView } from "framer-motion";
-import { useRef } from "react";
+import { motion, useInView, AnimatePresence } from "framer-motion";
+import { useRef, useState } from "react";
 import { Brain, Code, Zap, Sparkles, BookOpen } from "lucide-react";
 import TechOrbs from "./TechOrbs";
 
@@ -42,9 +42,12 @@ const storyChapters = [
   },
 ];
 
+const spring = { type: "spring" as const, stiffness: 260, damping: 22, mass: 0.9 };
+
 const AboutSection = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: false, amount: 0.15, margin: "-80px" });
+  const [hovered, setHovered] = useState<number | null>(null);
 
   return (
     <section id="about" className="relative py-32 px-6" ref={ref}>
@@ -54,7 +57,6 @@ const AboutSection = () => {
       />
 
       <div className="max-w-5xl mx-auto relative z-10">
-        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
@@ -75,16 +77,13 @@ const AboutSection = () => {
           </p>
         </motion.div>
 
-        {/* Neural timeline */}
         <div className="relative">
-          {/* Base timeline line */}
           <motion.div
             className="absolute left-8 md:left-1/2 md:-translate-x-px top-0 bottom-0 w-[2px] bg-gradient-to-b from-primary/30 via-secondary/30 to-accent/30 overflow-hidden"
             initial={{ scaleY: 0, originY: 0 }}
             animate={isInView ? { scaleY: 1 } : {}}
             transition={{ duration: 1.5, delay: 0.3 }}
           >
-            {/* Flowing light */}
             <motion.div
               className="absolute left-0 w-full h-32 -top-32"
               style={{
@@ -101,6 +100,12 @@ const AboutSection = () => {
             {storyChapters.map((chapter, i) => {
               const isLeft = i % 2 === 0;
               const Icon = chapter.icon;
+              const isHovered = hovered === i;
+              const isDimmed = hovered !== null && hovered !== i;
+              // detach direction: left cards move further left, right cards further right
+              const detachX = isHovered ? (isLeft ? -32 : 32) : 0;
+              const detachRotY = isHovered ? (isLeft ? -5 : 5) : 0;
+
               return (
                 <motion.div
                   key={chapter.title}
@@ -111,41 +116,43 @@ const AboutSection = () => {
                     isLeft ? "md:flex-row" : "md:flex-row-reverse"
                   }`}
                 >
-                  {/* Icon on the timeline */}
+                  {/* Icon on timeline */}
                   <motion.div
                     className="absolute left-8 md:left-1/2 -translate-x-1/2 top-4 md:top-1/2 md:-translate-y-1/2 z-20 group"
                     initial={{ scale: 0, rotate: -90 }}
                     animate={isInView ? { scale: 1, rotate: 0 } : {}}
                     transition={{ type: "spring", stiffness: 200, damping: 15, delay: 0.6 + i * 0.15 }}
                   >
-                    {/* Floating wrapper */}
                     <motion.div
                       animate={{ y: [0, -6, 0] }}
                       transition={{ duration: 3 + i * 0.3, repeat: Infinity, ease: "easeInOut" }}
                       className="relative"
                     >
-                      {/* Expanding pulse rings */}
                       {[0, 1].map((r) => (
                         <motion.span
                           key={r}
                           className={`absolute inset-0 rounded-full border ${chapter.borderColor}`}
-                          animate={{ scale: [1, 2.2], opacity: [0.6, 0] }}
+                          animate={{
+                            scale: isHovered ? [1, 2.8] : [1, 2.2],
+                            opacity: [isHovered ? 0.9 : 0.6, 0],
+                          }}
                           transition={{
-                            duration: 2.8,
+                            duration: isHovered ? 1.6 : 2.8,
                             repeat: Infinity,
-                            delay: r * 1.4,
+                            delay: r * (isHovered ? 0.8 : 1.4),
                             ease: "easeOut",
                           }}
                         />
                       ))}
-                      {/* Outer glow */}
-                      <div
-                        className="absolute inset-0 rounded-full blur-2xl opacity-60 group-hover:opacity-100 transition-opacity duration-500"
+                      <motion.div
+                        className="absolute inset-0 rounded-full blur-2xl"
+                        animate={{ opacity: isHovered ? 1 : 0.6, scale: isHovered ? 1.6 : 1 }}
+                        transition={spring}
                         style={{ background: chapter.glowBg }}
                       />
-                      {/* Icon core */}
                       <motion.div
-                        whileHover={{ scale: 1.15 }}
+                        animate={{ scale: isHovered ? 1.15 : 1 }}
+                        transition={spring}
                         className={`relative w-14 h-14 md:w-16 md:h-16 rounded-full glass-strong flex items-center justify-center border-2 ${chapter.borderColor}`}
                         style={{
                           boxShadow: `0 0 30px ${chapter.glowBg}, inset 0 0 12px ${chapter.glowBg}40`,
@@ -153,34 +160,110 @@ const AboutSection = () => {
                       >
                         <Icon className={`w-6 h-6 md:w-7 md:h-7 ${chapter.colorClass}`} />
                       </motion.div>
+
+                      {/* Particles escaping from node when hovered */}
+                      <AnimatePresence>
+                        {isHovered &&
+                          [...Array(6)].map((_, p) => {
+                            const angle = (p / 6) * Math.PI * 2;
+                            const dx = Math.cos(angle) * 60 * (isLeft ? -1 : 1);
+                            const dy = Math.sin(angle) * 40;
+                            return (
+                              <motion.span
+                                key={p}
+                                className="absolute top-1/2 left-1/2 w-1 h-1 rounded-full pointer-events-none"
+                                style={{ background: chapter.glowBg, boxShadow: `0 0 8px ${chapter.glowBg}` }}
+                                initial={{ x: 0, y: 0, opacity: 0, scale: 0 }}
+                                animate={{ x: dx, y: dy, opacity: [0, 1, 0], scale: [0, 1, 0] }}
+                                exit={{ opacity: 0 }}
+                                transition={{ duration: 1.2, repeat: Infinity, delay: p * 0.08, ease: "easeOut" }}
+                              />
+                            );
+                          })}
+                      </AnimatePresence>
                     </motion.div>
                   </motion.div>
 
                   {/* Card */}
-                  <div className={`ml-20 md:ml-0 md:w-[calc(50%-56px)] ${isLeft ? "md:pr-4" : "md:pl-4"}`}>
+                  <motion.div
+                    className={`ml-20 md:ml-0 md:w-[calc(50%-56px)] ${isLeft ? "md:pr-4" : "md:pl-4"}`}
+                    style={{ perspective: "1200px" }}
+                    animate={{ opacity: isDimmed ? 0.55 : 1, filter: isDimmed ? "blur(1px)" : "blur(0px)" }}
+                    transition={{ duration: 0.4 }}
+                  >
                     <motion.div
-                      className="glass rounded-2xl p-6 md:p-8 glow-border relative overflow-hidden"
-                      whileHover={{ y: -4, scale: 1.02 }}
-                      transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                      onHoverStart={() => setHovered(i)}
+                      onHoverEnd={() => setHovered((h) => (h === i ? null : h))}
+                      animate={{
+                        x: detachX,
+                        rotateY: detachRotY,
+                        rotateX: isHovered ? 2 : 0,
+                        scale: isHovered ? 1.03 : 1,
+                        z: isHovered ? 40 : 0,
+                      }}
+                      transition={spring}
+                      className="glass rounded-2xl p-6 md:p-8 glow-border relative overflow-hidden cursor-pointer"
+                      style={{
+                        transformStyle: "preserve-3d",
+                        transformOrigin: isLeft ? "right center" : "left center",
+                        boxShadow: isHovered
+                          ? `0 30px 80px -20px ${chapter.glowBg}, 0 0 60px ${chapter.glowBg}80, inset 0 0 30px ${chapter.glowBg}15`
+                          : "0 10px 30px -20px hsl(240 30% 2% / 0.5)",
+                      }}
                     >
-                      {/* Connector line to timeline */}
-                      <div
-                        className={`hidden md:block absolute top-1/2 ${isLeft ? "right-0 translate-x-full" : "left-0 -translate-x-full"} w-10 h-[1px]`}
+                      {/* Animated connector line — stretches on hover */}
+                      <motion.div
+                        className={`hidden md:block absolute top-1/2 ${
+                          isLeft ? "right-0" : "left-0"
+                        } h-[2px] origin-${isLeft ? "left" : "right"}`}
                         style={{
+                          [isLeft ? "right" : "left"]: 0,
+                          transform: `translate${isLeft ? "X(100%)" : "X(-100%)"} translateY(-50%)`,
                           background: `linear-gradient(${isLeft ? "to right" : "to left"}, ${chapter.glowBg}, transparent)`,
+                          boxShadow: `0 0 10px ${chapter.glowBg}`,
+                        } as React.CSSProperties}
+                        animate={{
+                          width: isHovered ? 72 : 40,
+                          opacity: isHovered ? 1 : 0.7,
+                        }}
+                        transition={spring}
+                      >
+                        {/* Energy pulse traveling along connector */}
+                        {isHovered && (
+                          <motion.span
+                            className="absolute top-1/2 -translate-y-1/2 w-2 h-2 rounded-full"
+                            style={{
+                              background: chapter.glowBg,
+                              boxShadow: `0 0 12px ${chapter.glowBg}, 0 0 24px ${chapter.glowBg}`,
+                            }}
+                            initial={{ [isLeft ? "left" : "right"]: "0%" }}
+                            animate={{ [isLeft ? "left" : "right"]: ["0%", "100%"] } as any}
+                            transition={{ duration: 0.9, repeat: Infinity, ease: "easeInOut" }}
+                          />
+                        )}
+                      </motion.div>
+
+                      {/* Ambient glow inside card */}
+                      <motion.div
+                        className="absolute inset-0 pointer-events-none rounded-2xl"
+                        animate={{ opacity: isHovered ? 1 : 0 }}
+                        transition={{ duration: 0.4 }}
+                        style={{
+                          background: `radial-gradient(circle at ${isLeft ? "100%" : "0%"} 50%, ${chapter.glowBg}22, transparent 60%)`,
                         }}
                       />
-                      <h3 className={`text-lg md:text-xl font-heading font-semibold ${chapter.colorClass} mb-3`}>
+
+                      <h3 className={`text-lg md:text-xl font-heading font-semibold ${chapter.colorClass} mb-3 relative`}>
                         {chapter.title}
                       </h3>
-                      <p className="text-foreground/80 font-body italic mb-4 text-sm leading-relaxed">
+                      <p className="text-foreground/80 font-body italic mb-4 text-sm leading-relaxed relative">
                         "{chapter.narrative}"
                       </p>
-                      <p className="text-muted-foreground font-body text-sm leading-relaxed">
+                      <p className="text-muted-foreground font-body text-sm leading-relaxed relative">
                         {chapter.description}
                       </p>
                     </motion.div>
-                  </div>
+                  </motion.div>
 
                   <div className="hidden md:block md:w-[calc(50%-56px)]" />
                 </motion.div>
@@ -191,7 +274,6 @@ const AboutSection = () => {
 
         <TechOrbs />
 
-        {/* Stats */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
