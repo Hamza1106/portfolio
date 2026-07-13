@@ -45,35 +45,29 @@ const techs: Tech[] = [
   },
 ];
 
-const SIZE = 96;
+const SIZE = 104;
 
-// Build a spherical projection of the logo:
-// We stamp the same logo at multiple longitudes around the sphere.
-// Each copy is rendered as a plane tangent to the sphere at that longitude,
-// so as the ball rotates the logo always appears wrapped ON the surface.
-// Two copies: front (0°) and back (180°). backfaceVisibility hides the one facing away,
-// so only one is ever visible and there are no edge-on strips.
-// 4 copies around the sphere so at any Y rotation at least one face is
-// squarely toward the camera — eliminates the half-hidden / edge-on strip.
-const LOGO_COPIES = [0, 90, 180, 270];
-
+/**
+ * Strategy: the logo is a camera-facing badge in front of the sphere.
+ * The ball itself has a rotating internal light band that gives it a
+ * spinning-planet feel, but the logo is always fully readable (never
+ * edge-on, never clipped, never half-hidden).
+ * Drag imparts a spin velocity to that internal band.
+ */
 const Orb = ({ tech, index }: { tech: Tech; index: number }) => {
-  const [rot, setRot] = useState({ x: -10, y: 0 });
-  const velocity = useRef({ x: 0, y: 0 });
+  const [spin, setSpin] = useState(0); // degrees, drives shine rotation
+  const velocity = useRef(0);
   const dragging = useRef(false);
-  const last = useRef({ x: 0, y: 0, t: 0 });
+  const last = useRef({ x: 0, t: 0 });
   const rafRef = useRef<number>(0);
 
   useEffect(() => {
     const loop = () => {
       if (!dragging.current) {
-        const vx = velocity.current.x;
-        const vy = velocity.current.y;
-        if (Math.abs(vx) > 0.02 || Math.abs(vy) > 0.02) {
-          setRot((r) => ({ x: r.x + vy, y: r.y + vx }));
-          velocity.current.x *= 0.95;
-          velocity.current.y *= 0.95;
-        }
+        // Idle: gentle continuous rotation
+        const idle = 0.35;
+        setSpin((s) => s + (Math.abs(velocity.current) > 0.05 ? velocity.current : idle));
+        velocity.current *= 0.94;
       }
       rafRef.current = requestAnimationFrame(loop);
     };
@@ -83,25 +77,22 @@ const Orb = ({ tech, index }: { tech: Tech; index: number }) => {
 
   const onDown = (e: React.PointerEvent) => {
     dragging.current = true;
-    velocity.current = { x: 0, y: 0 };
-    last.current = { x: e.clientX, y: e.clientY, t: performance.now() };
+    velocity.current = 0;
+    last.current = { x: e.clientX, t: performance.now() };
     (e.target as Element).setPointerCapture(e.pointerId);
   };
   const onMove = (e: React.PointerEvent) => {
     if (!dragging.current) return;
     const now = performance.now();
     const dx = e.clientX - last.current.x;
-    const dy = e.clientY - last.current.y;
     const dt = Math.max(1, now - last.current.t);
-    last.current = { x: e.clientX, y: e.clientY, t: now };
-    setRot((r) => ({ x: r.x - dy * 0.6, y: r.y + dx * 0.6 }));
-    velocity.current = { x: (dx / dt) * 10, y: (-dy / dt) * 10 };
+    last.current = { x: e.clientX, t: now };
+    setSpin((s) => s + dx * 0.8);
+    velocity.current = (dx / dt) * 12;
   };
   const onUp = () => {
     dragging.current = false;
   };
-
-  const radius = SIZE / 2;
 
   return (
     <motion.div
@@ -110,10 +101,9 @@ const Orb = ({ tech, index }: { tech: Tech; index: number }) => {
       viewport={{ once: true }}
       transition={{ duration: 0.5, delay: index * 0.08 }}
       className="flex flex-col items-center gap-3 select-none"
-      style={{ perspective: "800px" }}
     >
       <motion.div
-        animate={{ y: [0, -5, 0] }}
+        animate={{ y: [0, -6, 0] }}
         transition={{
           duration: 3.4 + index * 0.25,
           repeat: Infinity,
@@ -126,77 +116,67 @@ const Orb = ({ tech, index }: { tech: Tech; index: number }) => {
           onPointerMove={onMove}
           onPointerUp={onUp}
           onPointerCancel={onUp}
-          whileHover={{ scale: 1.06 }}
+          whileHover={{ scale: 1.08 }}
           whileTap={{ scale: 0.95 }}
           transition={{ type: "spring", stiffness: 300, damping: 18 }}
           className="relative cursor-grab active:cursor-grabbing touch-none"
-          style={{
-            width: SIZE,
-            height: SIZE,
-            transformStyle: "preserve-3d",
-          }}
+          style={{ width: SIZE, height: SIZE }}
         >
-          {/* Base sphere (solid tinted ball). Does NOT rotate — this is the mass of the ball. */}
+          {/* Ball body — solid tinted sphere with baked-in lighting */}
           <div
             className="absolute inset-0 rounded-full"
             style={{
-              background: `radial-gradient(circle at 32% 28%, hsl(0 0% 100% / 0.55) 0%, ${tech.color} 45%, ${tech.color} 60%, rgba(0,0,0,0.55) 100%)`,
-              boxShadow: `0 20px 40px -14px ${tech.color}90, inset -10px -14px 24px rgba(0,0,0,0.4), inset 8px 10px 18px rgba(255,255,255,0.18)`,
+              background: `radial-gradient(circle at 30% 25%, hsl(0 0% 100% / 0.6) 0%, ${tech.color} 42%, ${tech.color} 58%, rgba(0,0,0,0.6) 100%)`,
+              boxShadow: `0 24px 44px -14px ${tech.color}aa, inset -12px -16px 26px rgba(0,0,0,0.45), inset 10px 12px 22px rgba(255,255,255,0.22)`,
             }}
           />
 
-          {/* Rotating logo skin — clipped to the sphere circle so nothing spills over.
-              Each copy sits ON the surface with backfaceVisibility hidden. */}
+          {/* Rotating internal light band — the "spin" cue, clipped to sphere */}
           <div
-            className="absolute inset-0 rounded-full overflow-hidden"
-            style={{
-              transformStyle: "preserve-3d",
-              transform: `rotateX(${rot.x}deg) rotateY(${rot.y}deg)`,
-            }}
+            className="absolute inset-0 rounded-full overflow-hidden pointer-events-none"
+            style={{ transform: `rotate(${spin}deg)` }}
           >
-            {LOGO_COPIES.map((lon) => (
-              <div
-                key={lon}
-                className="absolute inset-0 flex items-center justify-center"
-                style={{
-                  transformStyle: "preserve-3d",
-                  transform: `rotateY(${lon}deg) translateZ(${radius - 2}px)`,
-                  backfaceVisibility: "hidden",
-                  WebkitBackfaceVisibility: "hidden",
-                } as React.CSSProperties}
-              >
-                <svg
-                  viewBox="0 0 24 24"
-                  width={SIZE * 0.52}
-                  height={SIZE * 0.52}
-                  fill="#ffffff"
-                  style={{
-                    filter: `drop-shadow(0 1px 0 rgba(0,0,0,0.4)) drop-shadow(0 0 2px rgba(0,0,0,0.3))`,
-                    opacity: 0.95,
-                  }}
-                >
-                  <path d={tech.path} />
-                </svg>
-              </div>
-            ))}
+            <div
+              className="absolute inset-0"
+              style={{
+                background: `conic-gradient(from 0deg, transparent 0deg, hsl(0 0% 100% / 0.28) 45deg, transparent 90deg, transparent 180deg, hsl(0 0% 100% / 0.12) 225deg, transparent 270deg)`,
+                mixBlendMode: "overlay",
+              }}
+            />
           </div>
 
-          {/* Static glossy highlight — sits above everything so lighting stays fixed in space */}
+          {/* Static glossy highlight (fixed in space) */}
           <div
             className="absolute inset-0 rounded-full pointer-events-none"
             style={{
               background:
-                "radial-gradient(ellipse 55% 40% at 32% 22%, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.15) 30%, transparent 55%)",
+                "radial-gradient(ellipse 58% 42% at 30% 20%, rgba(255,255,255,0.65) 0%, rgba(255,255,255,0.18) 32%, transparent 58%)",
             }}
           />
-          {/* Rim shadow */}
+
+          {/* Rim shading */}
           <div
             className="absolute inset-0 rounded-full pointer-events-none"
             style={{
               boxShadow:
-                "inset -6px -8px 20px rgba(0,0,0,0.35), inset 4px 6px 12px rgba(255,255,255,0.08)",
+                "inset -6px -8px 22px rgba(0,0,0,0.4), inset 4px 6px 14px rgba(255,255,255,0.1)",
             }}
           />
+
+          {/* Logo — always camera-facing, always fully visible */}
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <svg
+              viewBox="0 0 24 24"
+              width={SIZE * 0.5}
+              height={SIZE * 0.5}
+              fill="#ffffff"
+              style={{
+                filter: `drop-shadow(0 2px 3px rgba(0,0,0,0.55)) drop-shadow(0 0 1px rgba(0,0,0,0.5))`,
+              }}
+            >
+              <path d={tech.path} />
+            </svg>
+          </div>
         </motion.div>
       </motion.div>
       <span className="text-xs font-heading text-muted-foreground tracking-wide">
@@ -226,7 +206,7 @@ const TechOrbs = () => {
             <span className="text-gradient">Arsenal of Languages</span>
           </h3>
           <p className="text-xs text-muted-foreground mt-2 font-body">
-            Grab and flick an orb to spin it — it rests until you touch it
+            Drag any orb to give it a spin
           </p>
         </motion.div>
         <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-7 gap-6 md:gap-4 justify-items-center">
