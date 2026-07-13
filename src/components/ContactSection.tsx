@@ -402,14 +402,6 @@ const ContactSection = () => {
           </div>
         </div>
 
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={isInView ? { opacity: 0.5 } : {}}
-          transition={{ delay: 0.8 }}
-          className="text-center text-sm text-muted-foreground font-body mt-20"
-        >
-          Designed & Built with ✨ and a lot of ☕ by Hamza Akhtar
-        </motion.p>
       </div>
     </section>
   );
