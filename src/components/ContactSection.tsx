@@ -133,8 +133,6 @@ const connectLinks: ConnectLink[] = [
 ];
 
 const ConnectCard = ({ item, index }: { item: ConnectLink; index: number }) => {
-  const [hover, setHover] = useState(false);
-  const [pos, setPos] = useState({ x: 0.5, y: 0.5 });
   const Icon = item.icon;
 
   return (
@@ -142,121 +140,75 @@ const ConnectCard = ({ item, index }: { item: ConnectLink; index: number }) => {
       href={item.href}
       target="_blank"
       rel="noopener noreferrer"
-      initial={{ opacity: 0, y: 40 }}
+      initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-60px" }}
-      transition={{ duration: 0.6, delay: index * 0.12, ease: [0.22, 1, 0.36, 1] }}
-      onHoverStart={() => setHover(true)}
-      onHoverEnd={() => setHover(false)}
-      onMouseMove={(e) => {
-        const r = e.currentTarget.getBoundingClientRect();
-        setPos({ x: (e.clientX - r.left) / r.width, y: (e.clientY - r.top) / r.height });
-      }}
-      className="group relative block glass-strong rounded-3xl p-8 overflow-hidden cursor-pointer"
-      style={{
-        transformStyle: "preserve-3d",
-        perspective: "1000px",
-      }}
+      transition={{ duration: 0.55, delay: index * 0.1, ease: [0.22, 1, 0.36, 1] }}
+      whileHover="hover"
+      className="group relative block glass rounded-2xl p-6 overflow-hidden border border-white/5 hover:border-white/15 transition-colors"
     >
+      {/* Ambient glow that appears on hover */}
       <motion.div
-        animate={{
-          rotateX: hover ? (pos.y - 0.5) * -10 : 0,
-          rotateY: hover ? (pos.x - 0.5) * 12 : 0,
-          scale: hover ? 1.03 : 1,
-        }}
-        transition={{ type: "spring", stiffness: 260, damping: 22 }}
-        style={{ transformStyle: "preserve-3d" }}
-        className="relative"
-      >
-        {/* Spotlight following cursor */}
+        variants={{ hover: { opacity: 0.55, scale: 1.1 } }}
+        initial={{ opacity: 0, scale: 1 }}
+        transition={{ duration: 0.5 }}
+        className="absolute -inset-8 rounded-full blur-3xl pointer-events-none"
+        style={{ background: item.glow }}
+      />
+
+      <div className="relative flex items-center gap-4">
+        {/* Icon badge */}
         <motion.div
-          className="absolute inset-0 -m-8 pointer-events-none rounded-3xl"
-          animate={{ opacity: hover ? 1 : 0 }}
+          variants={{ hover: { y: -2, rotate: -4 } }}
+          transition={{ type: "spring", stiffness: 300, damping: 18 }}
+          className="relative shrink-0 w-12 h-12 rounded-xl flex items-center justify-center border border-white/10"
           style={{
-            background: `radial-gradient(400px circle at ${pos.x * 100}% ${pos.y * 100}%, ${item.glow}33, transparent 60%)`,
+            background: `linear-gradient(135deg, ${item.glow}22, ${item.glow}08)`,
+            boxShadow: `0 8px 24px -12px ${item.glow}80`,
           }}
-        />
-
-        {/* Corner glow */}
-        <motion.div
-          className="absolute -top-16 -right-16 w-40 h-40 rounded-full blur-3xl pointer-events-none"
-          animate={{ opacity: hover ? 0.7 : 0.25, scale: hover ? 1.2 : 1 }}
-          transition={{ duration: 0.5 }}
-          style={{ background: item.glow }}
-        />
-
-        {/* Top row: icon + arrow */}
-        <div className="relative flex items-start justify-between mb-8">
-          <motion.div
-            animate={{
-              y: hover ? -4 : 0,
-              rotate: hover ? -6 : 0,
-              boxShadow: hover
-                ? `0 20px 40px -12px ${item.glow}, 0 0 30px ${item.glow}80`
-                : `0 8px 24px -12px ${item.glow}60`,
-            }}
-            transition={{ type: "spring", stiffness: 260, damping: 20 }}
-            className="relative w-14 h-14 rounded-2xl glass flex items-center justify-center border border-white/10"
-            style={{ transform: "translateZ(40px)" }}
-          >
-            <Icon className="w-6 h-6 text-foreground" />
-            <motion.span
-              className="absolute inset-0 rounded-2xl border"
-              style={{ borderColor: item.glow }}
-              animate={{ scale: hover ? 1.4 : 1, opacity: hover ? 0 : 0 }}
-              transition={{ duration: 0.8, repeat: hover ? Infinity : 0 }}
-            />
-          </motion.div>
-
-          <motion.div
-            animate={{
-              x: hover ? 4 : 0,
-              y: hover ? -4 : 0,
-              rotate: hover ? 0 : -45,
-              opacity: hover ? 1 : 0.4,
-            }}
-            transition={{ type: "spring", stiffness: 260, damping: 20 }}
-            className="w-10 h-10 rounded-full glass flex items-center justify-center border border-white/10"
-            style={{ transform: "translateZ(30px)" }}
-          >
-            <ArrowUpRight className="w-4 h-4 text-foreground" />
-          </motion.div>
-        </div>
+        >
+          <Icon className="w-5 h-5 text-foreground" />
+        </motion.div>
 
         {/* Text */}
-        <div className="relative" style={{ transform: "translateZ(20px)" }}>
-          <span className="inline-block text-[10px] tracking-[0.2em] uppercase font-heading text-muted-foreground mb-2">
-            {item.tag}
-          </span>
-          <h3 className={`text-2xl md:text-3xl font-heading font-bold mb-1 bg-gradient-to-r ${item.accent} bg-clip-text text-transparent`}>
-            {item.label}
-          </h3>
-          <p className="text-sm text-muted-foreground font-body">{item.handle}</p>
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-2">
+            <h3 className="text-base font-heading font-semibold text-foreground truncate">
+              {item.label}
+            </h3>
+            <span
+              className="text-[9px] tracking-[0.18em] uppercase font-heading px-1.5 py-0.5 rounded-md border"
+              style={{ borderColor: `${item.glow}55`, color: item.glow }}
+            >
+              {item.tag}
+            </span>
+          </div>
+          <p className="text-xs text-muted-foreground font-body truncate mt-0.5">
+            {item.handle}
+          </p>
         </div>
 
-        {/* Bottom animated line */}
-        <div className="relative mt-8 h-[2px] w-full bg-white/5 rounded-full overflow-hidden" style={{ transform: "translateZ(10px)" }}>
-          <motion.div
-            className="absolute inset-y-0 left-0 rounded-full"
-            style={{ background: `linear-gradient(90deg, ${item.glow}, transparent)` }}
-            animate={{ width: hover ? "100%" : "20%" }}
-            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-          />
-        </div>
-
-        {/* Sweeping shine */}
+        {/* Arrow */}
         <motion.div
-          className="absolute inset-0 pointer-events-none rounded-3xl overflow-hidden"
-          style={{ transform: "translateZ(0)" }}
+          variants={{ hover: { x: 3, y: -3, opacity: 1 } }}
+          initial={{ opacity: 0.5 }}
+          transition={{ type: "spring", stiffness: 300, damping: 18 }}
+          className="shrink-0 w-8 h-8 rounded-full flex items-center justify-center border border-white/10 bg-white/[0.03]"
         >
-          <motion.div
-            className="absolute inset-y-0 w-1/3 -skew-x-12"
-            style={{ background: "linear-gradient(90deg, transparent, hsl(0 0% 100% / 0.08), transparent)" }}
-            animate={{ x: hover ? ["-100%", "300%"] : "-100%" }}
-            transition={{ duration: 1.2, ease: "easeInOut" }}
-          />
+          <ArrowUpRight className="w-4 h-4" style={{ color: item.glow }} />
         </motion.div>
-      </motion.div>
+      </div>
+
+      {/* Bottom accent line */}
+      <div className="relative mt-5 h-[1.5px] w-full bg-white/5 rounded-full overflow-hidden">
+        <motion.div
+          variants={{ hover: { width: "100%" } }}
+          initial={{ width: "15%" }}
+          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+          className="absolute inset-y-0 left-0 rounded-full"
+          style={{ background: `linear-gradient(90deg, ${item.glow}, transparent)` }}
+        />
+      </div>
     </motion.a>
   );
 };
