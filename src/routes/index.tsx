@@ -22,6 +22,7 @@ function Index() {
       <AboutSection />
       <ProjectsSection />
       <ContactSection />
+      <Footer />
     </div>
   );
 }
