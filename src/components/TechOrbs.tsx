@@ -53,7 +53,9 @@ const SIZE = 96;
 // so as the ball rotates the logo always appears wrapped ON the surface.
 // Two copies: front (0°) and back (180°). backfaceVisibility hides the one facing away,
 // so only one is ever visible and there are no edge-on strips.
-const LOGO_COPIES = [0, 180];
+// 4 copies around the sphere so at any Y rotation at least one face is
+// squarely toward the camera — eliminates the half-hidden / edge-on strip.
+const LOGO_COPIES = [0, 90, 180, 270];
 
 const Orb = ({ tech, index }: { tech: Tech; index: number }) => {
   const [rot, setRot] = useState({ x: -10, y: 0 });
