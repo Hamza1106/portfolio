@@ -118,7 +118,9 @@ const AboutSection = () => {
                 >
                   {/* Icon on timeline */}
                   <motion.div
-                    className="absolute left-8 md:left-1/2 -translate-x-1/2 top-4 md:top-1/2 md:-translate-y-1/2 z-20 group"
+                    onHoverStart={() => setHovered(i)}
+                    onHoverEnd={() => setHovered((h) => (h === i ? null : h))}
+                    className="absolute left-8 md:left-1/2 -translate-x-1/2 top-4 md:top-1/2 md:-translate-y-1/2 z-20 group cursor-pointer"
                     initial={{ scale: 0, rotate: -90 }}
                     animate={isInView ? { scale: 1, rotate: 0 } : {}}
                     transition={{ type: "spring", stiffness: 200, damping: 15, delay: 0.6 + i * 0.15 }}
