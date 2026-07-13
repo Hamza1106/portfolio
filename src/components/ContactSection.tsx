@@ -226,18 +226,10 @@ const ContactSection = () => {
     if (status === "sending") return;
     setStatus("sending");
     try {
-      const res = await fetch("https://formsubmit.co/ajax/hamza.akhtar0129@gmail.com", {
+      const res = await fetch("/api/public/contact", {
         method: "POST",
-        headers: { "Content-Type": "application/json", Accept: "application/json" },
-        body: JSON.stringify({
-          name: form.name,
-          email: form.email,
-          subject: form.subject || `New portfolio message from ${form.name}`,
-          phone: form.phone,
-          message: form.message,
-          _template: "table",
-          _captcha: "false",
-        }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
       });
       if (!res.ok) throw new Error("Failed");
       setStatus("sent");
