@@ -226,10 +226,16 @@ const ContactSection = () => {
     if (status === "sending") return;
     setStatus("sending");
     try {
-      const res = await fetch("/api/public/contact", {
+      const res = await fetch("https://formspree.io/f/mzdndykb", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        headers: { "Content-Type": "application/json", "Accept": "application/json" },
+        body: JSON.stringify({
+          name:    form.name,
+          email:   form.email,
+          phone:   form.phone,
+          subject: form.subject,
+          message: form.message,
+        }),
       });
       if (!res.ok) throw new Error("Failed");
       setStatus("sent");
@@ -378,7 +384,9 @@ const ContactSection = () => {
           </motion.div>
         </div>
 
-        {/* ---------------- Connect section ---------------- */}
+       
+
+        {/* ---------------- Get in Touch cards ---------------- */}
         <div className="mt-32">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -387,19 +395,48 @@ const ContactSection = () => {
             transition={{ duration: 0.6 }}
             className="text-center mb-12"
           >
-            <span className="inline-block text-xs text-accent font-heading tracking-[0.25em] uppercase mb-3">
-              // Direct Channels
+            <span className="inline-block text-sm text-secondary font-heading tracking-widest uppercase mb-4">
+              Let's Connect
             </span>
-            <h3 className="text-3xl md:text-5xl font-heading font-bold">
-              <span className="text-gradient">Find Me Elsewhere</span>
-            </h3>
+            <h2 className="text-4xl md:text-6xl font-heading font-bold mb-6">
+              <span className="text-gradient">Where Ideas Become Reality</span>
+            </h2>
+            <p className="text-muted-foreground text-lg max-w-xl mx-auto font-body">
+              From AI-powered applications to premium digital experiences, I'm always open to building products that make an impact.
+            </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {connectLinks.map((l, i) => (
-              <ConnectCard key={l.label} item={l} index={i} />
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7, delay: 0.3 }}
+            className="flex flex-wrap justify-center gap-6"
+          >
+            {[
+              { label: "Fiverr", href: "https://www.fiverr.com/orbit_flow", iconEl: (
+                <svg viewBox="0 0 24 24" className="w-6 h-6" fill="#1dbf73" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M23.004 15.588a.995.995 0 1 0 .001-1.99.995.995 0 0 0-.001 1.99zm-.996-3.706h-1.44c-.249 0-.441.187-.441.435v5.568h-5.331v-5.568c0-.248-.192-.435-.44-.435h-1.441v-1.94h1.441c.248 0 .44-.187.44-.435V8.561c0-1.688 1.376-3.061 3.065-3.061h1.823c.249 0 .441-.188.441-.436V3.5c0-.248-.192-.436-.44-.436h-1.824C15.565 3.064 13 5.626 13 8.561v1.381h-1.44c-.249 0-.441.187-.441.435v1.94h-1.44v-3.44c0-.248-.192-.435-.44-.435H7.794c-.249 0-.44.187-.44.435v3.44H5.914v-1.94c0-.248-.192-.435-.44-.435H4.033c-.248 0-.44.187-.44.435v5.568H1.872v1.94h7.258v-1.94H7.355v-3.44h1.44v3.44c0 .248.191.435.44.435h1.441v1.94H8.795v1.94H22.01v-1.94h-1.441v-5.568h1.44c.248 0 .44-.187.44-.435v-1.94zm-11.45 5.568H9.117v-3.628h1.44v3.628z"/>
+                </svg>
+              )},
+              { label: "GitHub", href: "https://github.com/Hamza1106", iconEl: <Github className="w-6 h-6 text-secondary" /> },
+              { label: "LinkedIn", href: "https://www.linkedin.com/in/hamza-akhtar-8ab424415/", iconEl: <Linkedin className="w-6 h-6 text-[#0a66c2]" /> },
+            ].map((link) => (
+              <motion.a
+                key={link.label}
+                href={link.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group glow-border rounded-2xl px-8 py-6 flex items-center gap-4 transition-transform duration-300 hover:scale-105"
+                style={{ background: "hsl(230 20% 12% / 0.6)", backdropFilter: "blur(20px)" }}
+                whileHover={{ y: -5 }}
+              >
+                {link.iconEl}
+                <span className="font-heading font-medium text-foreground">{link.label}</span>
+                <ArrowUpRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
+              </motion.a>
             ))}
-          </div>
+          </motion.div>
         </div>
 
       </div>

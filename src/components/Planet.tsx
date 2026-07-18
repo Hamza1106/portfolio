@@ -2,11 +2,11 @@ import { Suspense, useRef } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { useGLTF, OrbitControls, Environment, Float } from "@react-three/drei";
 import { Group } from "three";
-import planetAsset from "@/assets/stylized_planet.glb.asset.json";
+import planetModel from "@/assets/stylized_planet.glb";
 
 function PlanetModel() {
   const groupRef = useRef<Group>(null);
-  const { scene } = useGLTF(planetAsset.url);
+  const { scene } = useGLTF(planetModel);
 
   useFrame((_, delta) => {
     if (groupRef.current) {
@@ -23,7 +23,7 @@ function PlanetModel() {
   );
 }
 
-useGLTF.preload(planetAsset.url);
+useGLTF.preload(planetModel);
 
 const Planet = () => {
   return (

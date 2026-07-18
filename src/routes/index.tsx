@@ -7,6 +7,7 @@ import AboutSection from "@/components/AboutSection";
 import ProjectsSection from "@/components/ProjectsSection";
 import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
+import StreamlitWidget from "@/components/StreamlitWidget";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -23,6 +24,7 @@ function Index() {
       <ProjectsSection />
       <ContactSection />
       <Footer />
+      <StreamlitWidget />
     </div>
   );
 }
